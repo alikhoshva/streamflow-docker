@@ -1,0 +1,67 @@
+name: Create Weekly Standup Issue
+
+on:
+  schedule:
+    # Runs every Monday at 07:00 UTC (Adjust to your local timezone offset)
+    - cron: '0 7 * * 1'
+  workflow_dispatch: # Allows manual trigger for testing
+
+jobs:
+  create_issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Get Formatted Date
+        id: date
+        run: echo "DATE=$(date +'%B %d, %Y')" >> $GITHUB_OUTPUT
+
+      - name: Create Standup Issue
+        uses: imjohnbo/issue-bot@v3
+        with:
+          assignees: "aleksandr_github, mason_github, paul_github, taranjit_github" # Replace with actual GitHub usernames
+          labels: "standup"
+          title: "Weekly Standup: Week of ${{ steps.date.outputs.DATE }}"
+          body: |
+            ## 📅 Weekly Standup Thread (${{ steps.date.outputs.DATE }})
+            Welcome to this week's standup thread!
+
+            ### 📋 How to log your daily updates:
+            1. **On Monday**: Post **1 comment** using the template below.
+            2. **Tue – Fri**: Edit your comment each morning to fill in that day's log.
+
+            ---
+
+            ### 📝 Team Member Weekly Template:
+            ```markdown
+            ### 👤 [Your Name] - Weekly Log
+
+            #### 🔹 Monday
+            * **Yesterday:** 
+            * **Today:** 
+            * **Blockers:** 
+
+            #### 🔹 Tuesday
+            * **Yesterday:** 
+            * **Today:** 
+            * **Blockers:** 
+
+            #### 🔹 Wednesday
+            * **Yesterday:** 
+            * **Today:** 
+            * **Blockers:** 
+
+            #### 🔹 Thursday
+            * **Yesterday:** 
+            * **Today:** 
+            * **Blockers:** 
+
+            #### 🔹 Friday
+            * **Yesterday:** 
+            * **Today:** 
+            * **Blockers:** 
+            ```
+          pinned: true # Pins thread to top of repository issues page
+          close-previous: true # Automatically closes previous week's standup issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
