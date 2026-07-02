@@ -19,7 +19,8 @@ jobs:
       - name: Create Standup Issue
         uses: imjohnbo/issue-bot@v3
         with:
-          assignees: "aleksandr_github, mason_github, paul_github, taranjit_github" # Replace with actual GitHub usernames
+          # Optional: Add actual collaborator GitHub usernames separated by commas (e.g., "user1, user2")
+          # assignees: "your_github_username"
           labels: "standup"
           title: "Weekly Standup: Week of ${{ steps.date.outputs.DATE }}"
           body: |
