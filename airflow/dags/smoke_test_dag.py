@@ -10,7 +10,7 @@ default_args = {
 with DAG(
     'prototype_connecting_pieces_test',
     default_args=default_args,
-    schedule_interval=None,
+    schedule=None,
     catchup=False
 ) as dag:
 
