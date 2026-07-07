@@ -1,0 +1,13 @@
+kafka:
+  bootstrap_servers: "redpanda:29092"
+  topic: "streamflow.events"
+
+spark:
+  app_name: "SmartStoreTelemetry"
+  raw_output_path: "/opt/streamflow/data/raw"
+  checkpoint_path: "/opt/streamflow/data/checkpoints"
+  curated_output_path: "/opt/streamflow/data/curated"
+  rejects_path: "/opt/streamflow/data/rejects"
+
+store_rules:
+  critical_stock_threshold: 5
