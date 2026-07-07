@@ -1,12 +1,14 @@
 import json
+import os
 import time
 from datetime import datetime, timezone
 
 from kafka import KafkaProducer
 
 
+bootstrap_servers = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 producer = KafkaProducer(
-    bootstrap_servers="localhost:9092",
+    bootstrap_servers=bootstrap_servers,
     value_serializer=lambda value: json.dumps(value).encode("utf-8"),
 )
 
