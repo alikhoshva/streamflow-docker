@@ -3,11 +3,8 @@ kafka:
   topic: "streamflow.events"
 
 spark:
-  app_name: "SmartStoreTelemetry"
+  app_name: "PrototypeSmokeTest"
   raw_output_path: "/opt/streamflow/data/raw"
-  checkpoint_path: "/opt/streamflow/data/checkpoints"
-  curated_output_path: "/opt/streamflow/data/curated"
-  rejects_path: "/opt/streamflow/data/rejects"
 
 store_rules:
   critical_stock_threshold: 5
