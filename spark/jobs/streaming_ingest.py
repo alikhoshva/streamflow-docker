@@ -24,10 +24,11 @@ def main():
     # (Assuming FINAL_RETAIL_SPARK_SCHEMA is defined)
     parsed_df = string_df.select(from_json(col("json_string"), FINAL_RETAIL_SPARK_SCHEMA).alias("data")).select("data.*")
 
-    # Write the output stream to the console to print rows as they are received
+    # Write valid raw records to Parquet files in data/raw/
     query = parsed_df.writeStream \
-        .format("console") \
-        .option("truncate", "false") \
+        .format("parquet") \
+        .option("path", "data/raw") \
+        .option("checkpointLocation", "data/checkpoints/raw") \
         .start()
 
     query.awaitTermination()
