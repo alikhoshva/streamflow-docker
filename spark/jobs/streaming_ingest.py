@@ -4,7 +4,7 @@ Spark Streaming Ingestion Job.
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, from_json
-from schemas import FINAL_RETAIL_SPARK_SCHEMA
+from schemas import RETAIL_SPARK_SCHEMA
 
 def main():
     spark = SparkSession.builder \
@@ -21,8 +21,7 @@ def main():
     string_df = raw_kafka_stream.selectExpr("CAST(value AS STRING) as json_string")
 
     # 4. Parse JSON string using your strict structural schema contract
-    # (Assuming FINAL_RETAIL_SPARK_SCHEMA is defined)
-    parsed_df = string_df.select(from_json(col("json_string"), FINAL_RETAIL_SPARK_SCHEMA).alias("data")).select("data.*")
+    parsed_df = string_df.select(from_json(col("json_string"), RETAIL_SPARK_SCHEMA).alias("data")).select("data.*")
 
     # Write valid raw records to Parquet files in data/raw/
     query = parsed_df.writeStream \

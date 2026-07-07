@@ -10,7 +10,7 @@ payload_schema = StructType([
 ])
 
 # Main outer wrapper contract
-FINAL_RETAIL_SPARK_SCHEMA = StructType([
+RETAIL_SPARK_SCHEMA = StructType([
     StructField("event_id", StringType(), nullable=True), # Nullable so we can parse events missing an ID
     StructField("event_type", StringType(), nullable=False),
     StructField("event_ts", StringType(), nullable=False),
