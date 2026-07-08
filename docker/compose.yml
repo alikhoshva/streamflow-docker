@@ -56,3 +56,29 @@ services:
       sleep 2 &&
       echo 'Launching core Airflow web engine...' &&
       airflow standalone"
+
+  spark:
+    image: apache/spark:3.5.0
+    container_name: streamflow-spark
+    user: root
+    depends_on:
+      - kafka
+    volumes:
+      - ../spark/jobs:/opt/airflow/jobs
+      - ../src:/opt/streamflow/src
+      - ../config:/opt/streamflow/config
+      - ../data:/opt/streamflow/data
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - PYTHONPATH=/opt/streamflow/src:/tmp/pip-packages
+      - RAW_OUTPUT_PATH=/opt/streamflow/data/raw
+      - REJECTS_OUTPUT_PATH=/opt/streamflow/data/rejects
+      - CHECKPOINT_LOCATION=/opt/streamflow/data/checkpoints/raw
+    command: >
+      bash -c "
+      python3 -m pip install --no-cache-dir --target /tmp/pip-packages pyyaml structlog &&
+      /opt/spark/bin/spark-submit
+      --conf spark.jars.ivy=/tmp/.ivy2
+      --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0
+      /opt/airflow/jobs/streaming_ingest.py
+      "
