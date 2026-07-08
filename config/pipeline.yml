@@ -1,0 +1,3 @@
+spark:
+  app_name: "PrototypeSmokeTest"
+  raw_output_path: "/opt/streamflow/data/raw"

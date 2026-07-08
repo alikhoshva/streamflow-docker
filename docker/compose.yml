@@ -31,3 +31,28 @@ services:
       - kafka
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+
+  airflow:
+    build:
+      context: .
+      dockerfile: airflow.Dockerfile
+    container_name: streamflow_platform
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../airflow/dags:/opt/airflow/dags
+      - ../spark/jobs:/opt/airflow/jobs
+      - ../config:/opt/streamflow/config
+      - ../data:/opt/streamflow/data
+    environment:
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      # Airflow 3 settings to disable authentication for local development sandbox
+      - AIRFLOW__WEBSERVER__AUTH_BACKEND=airflow.providers.fab.auth_manager.api.auth.backend.noauth
+    command: >
+      bash -c "
+      echo 'Running database migrations...' &&
+      airflow db migrate && 
+      sleep 2 &&
+      echo 'Launching core Airflow web engine...' &&
+      airflow standalone"
