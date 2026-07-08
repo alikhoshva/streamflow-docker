@@ -21,6 +21,12 @@ services:
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
       - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
       - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+    healthcheck:
+      test: ["CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
 
   producer:
     build:
@@ -28,7 +34,8 @@ services:
       dockerfile: docker/producer.Dockerfile
     container_name: streamflow-producer
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
 
@@ -56,3 +63,30 @@ services:
       sleep 2 &&
       echo 'Launching core Airflow web engine...' &&
       airflow standalone"
+
+  spark:
+    image: apache/spark:4.1.2
+    container_name: streamflow-spark
+    user: root
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ../spark/jobs:/opt/airflow/jobs
+      - ../src:/opt/streamflow/src
+      - ../config:/opt/streamflow/config
+      - ../data:/opt/streamflow/data
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - PYTHONPATH=/opt/streamflow/src:/tmp/pip-packages
+      - RAW_OUTPUT_PATH=/opt/streamflow/data/raw
+      - REJECTS_OUTPUT_PATH=/opt/streamflow/data/rejects
+      - CHECKPOINT_LOCATION=/opt/streamflow/data/checkpoints/raw
+    command: >
+      bash -c "
+      python3 -m pip install --no-cache-dir --target /tmp/pip-packages pyyaml structlog &&
+      /opt/spark/bin/spark-submit
+      --conf spark.jars.ivy=/tmp/.ivy2
+      --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.2
+      /opt/airflow/jobs/streaming_ingest.py
+      "
