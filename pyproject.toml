@@ -9,9 +9,18 @@ description = "Streamflow stream processing pipeline"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pyspark",
-    "apache-airflow",
     "kafka-python-ng",
+]
+
+[project.optional-dependencies]
+spark = [
+    "pyspark",
+]
+airflow = [
+    "apache-airflow",
+    "apache-airflow-providers-apache-spark",
+]
+dev = [
     "pytest",
 ]
 
