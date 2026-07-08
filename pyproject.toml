@@ -30,3 +30,5 @@ where = ["src"]
 [tool.pyright]
 extraPaths = ["spark/jobs"]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]

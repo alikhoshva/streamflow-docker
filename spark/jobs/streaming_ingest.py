@@ -62,7 +62,7 @@ def main():
         .format("kafka") \
         .option("kafka.bootstrap.servers", broker) \
         .option("subscribe", topic) \
-        .option("startingOffsets", "latest") \
+        .option("startingOffsets", "earliest") \
         .load()
 
     # Capture raw JSON string and Kafka ingest timestamp for duplicate validation
