@@ -1,4 +1,5 @@
 import os
+import yaml
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
@@ -13,10 +14,20 @@ default_args = {
 }
 
 def validate_curated_data():
-    # UPDATED: Added /opt/streamflow/ to match the Docker volume mount
+    # Load configuration to resolve curated directory
+    config_path = "/opt/streamflow/config/pipeline.yml"
+    curated_path = "/opt/streamflow/data/curated"
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r") as f:
+                config = yaml.safe_load(f) or {}
+                curated_path = config.get("spark", {}).get("curated_output_path", curated_path)
+        except Exception as e:
+            print(f"Warning: Failed to load configuration from {config_path}: {e}")
+
     paths_to_check = [
-        "/opt/streamflow/data/curated/daily_summary/top_items",
-        "/opt/streamflow/data/curated/daily_summary/low_stock_alerts"
+        f"{curated_path}/daily_summary/top_items",
+        f"{curated_path}/daily_summary/low_stock_alerts"
     ]
     
     for path in paths_to_check:

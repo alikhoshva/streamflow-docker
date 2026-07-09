@@ -1,15 +1,31 @@
+import os
 import yaml
+from pathlib import Path
 from pyspark.sql import SparkSession
 
 # 1. Load your central configuration
-with open("/opt/streamflow/config/pipeline.yml", "r") as f:
-    config = yaml.safe_load(f)
+project_root = Path(__file__).resolve().parent.parent.parent
+config_paths = [
+    "/opt/streamflow/config/pipeline.yml",
+    project_root / "config" / "pipeline.yml",
+    "config/pipeline.yml"
+]
+config = {}
+for path in config_paths:
+    if os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                config = yaml.safe_load(f) or {}
+            break
+        except Exception:
+            pass
 
-raw_path = config["spark"]["raw_output_path"]
+app_name = config.get("spark", {}).get("app_name", "PrototypeSmokeTest")
+raw_path = config.get("spark", {}).get("raw_output_path", "data/raw")
 
 # 2. Initialize the Spark environment mapped in your Docker container
 spark = SparkSession.builder \
-    .appName(config["spark"]["app_name"]) \
+    .appName(app_name) \
     .getOrCreate()
 
 # 3. Create a minimal 1-row dataframe matching your specific contract format

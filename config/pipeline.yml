@@ -1,3 +1,14 @@
 spark:
   app_name: "PrototypeSmokeTest"
   raw_output_path: "/opt/streamflow/data/raw"
+  rejects_output_path: "/opt/streamflow/data/rejects"
+  checkpoint_location: "/opt/streamflow/data/checkpoints/raw"
+  curated_output_path: "/opt/streamflow/data/curated"
+
+kafka:
+  bootstrap_servers: "kafka:29092"
+  topic: "streamflow.events"
+
+producer:
+  events_per_second: 2
+  log_level: "INFO"
