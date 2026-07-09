@@ -54,8 +54,7 @@ services:
         condition: service_completed_successfully
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
-    command: >
-      sh -c " echo 'Waiting 20 seconds before starting producer...' && sleep 20 && python src/streamflow/producer.py"
+
 
   airflow:
     build:
