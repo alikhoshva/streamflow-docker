@@ -65,6 +65,7 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
       - AIRFLOW__WEBSERVER__AUTH_BACKEND=airflow.providers.fab.auth_manager.api.auth.backend.session.SessionAuthBackend
+      - AIRFLOW_CONN_SPARK_DEFAULT=spark://local%5B*%5D
     command:
       - bash
       - -c

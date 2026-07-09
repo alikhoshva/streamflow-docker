@@ -7,4 +7,4 @@ ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV PATH=$PATH:$JAVA_HOME/bin
 
 USER airflow
-RUN pip install PyYAML pyspark==3.5.0
+RUN pip install PyYAML pyspark==3.5.0 apache-airflow-providers-apache-spark
