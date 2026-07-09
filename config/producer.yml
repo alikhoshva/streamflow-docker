@@ -1,0 +1,151 @@
+sku_catalog:
+  SKU-00001:
+    price: 12.99
+    starting_stock: 150
+  SKU-00002:
+    price: 4.50
+    starting_stock: 90
+  SKU-00003:
+    price: 19.99
+    starting_stock: 200
+  SKU-00004:
+    price: 7.25
+    starting_stock: 60
+  SKU-00005:
+    price: 34.00
+    starting_stock: 135
+  SKU-00006:
+    price: 99.99
+    starting_stock: 20
+  SKU-00007:
+    price: 2.99
+    starting_stock: 300
+  SKU-00008:
+    price: 15.50
+    starting_stock: 45
+  SKU-00009:
+    price: 8.75
+    starting_stock: 80
+  SKU-00010:
+    price: 27.30
+    starting_stock: 125
+  SKU-00011:
+    price: 14.99
+    starting_stock: 100
+  SKU-00012:
+    price: 49.99
+    starting_stock: 50
+  SKU-00013:
+    price: 24.99
+    starting_stock: 80
+  SKU-00014:
+    price: 18.50
+    starting_stock: 120
+  SKU-00015:
+    price: 29.99
+    starting_stock: 75
+  SKU-00016:
+    price: 11.25
+    starting_stock: 150
+  SKU-00017:
+    price: 9.99
+    starting_stock: 110
+  SKU-00018:
+    price: 6.99
+    starting_stock: 200
+  SKU-00019:
+    price: 15.99
+    starting_stock: 130
+  SKU-00020:
+    price: 5.49
+    starting_stock: 180
+  SKU-00021:
+    price: 10.99
+    starting_stock: 140
+  SKU-00022:
+    price: 8.50
+    starting_stock: 160
+  SKU-00023:
+    price: 12.99
+    starting_stock: 100
+  SKU-00024:
+    price: 45.00
+    starting_stock: 40
+  SKU-00025:
+    price: 22.99
+    starting_stock: 120
+  SKU-00026:
+    price: 14.50
+    starting_stock: 250
+  SKU-00027:
+    price: 16.99
+    starting_stock: 90
+  SKU-00028:
+    price: 11.99
+    starting_stock: 150
+  SKU-00029:
+    price: 13.50
+    starting_stock: 110
+  SKU-00030:
+    price: 35.00
+    starting_stock: 70
+  SKU-00031:
+    price: 19.99
+    starting_stock: 105
+  SKU-00032:
+    price: 15.00
+    starting_stock: 175
+  SKU-00033:
+    price: 39.99
+    starting_stock: 60
+  SKU-00034:
+    price: 18.99
+    starting_stock: 140
+  SKU-00035:
+    price: 49.99
+    starting_stock: 85
+  SKU-00036:
+    price: 25.50
+    starting_stock: 120
+  SKU-00037:
+    price: 39.99
+    starting_stock: 65
+  SKU-00038:
+    price: 29.99
+    starting_stock: 100
+  SKU-00039:
+    price: 45.00
+    starting_stock: 90
+  SKU-00040:
+    price: 8.99
+    starting_stock: 220
+  SKU-00041:
+    price: 14.99
+    starting_stock: 200
+  SKU-00042:
+    price: 4.99
+    starting_stock: 300
+  SKU-00043:
+    price: 8.99
+    starting_stock: 180
+  SKU-00044:
+    price: 15.50
+    starting_stock: 140
+  SKU-00045:
+    price: 6.50
+    starting_stock: 250
+  SKU-00046:
+    price: 7.99
+    starting_stock: 160
+  SKU-00047:
+    price: 11.99
+    starting_stock: 130
+  SKU-00048:
+    price: 6.99
+    starting_stock: 200
+  SKU-00049:
+    price: 12.50
+    starting_stock: 150
+  SKU-00050:
+    price: 3.49
+    starting_stock: 400

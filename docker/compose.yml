@@ -46,7 +46,6 @@ services:
     command: >
       bash -c "python src/streamflow/producer.py 2>&1 | tee /opt/streamflow/logs/producer.log"
 
-
   airflow:
     build:
       context: .
@@ -72,18 +71,18 @@ services:
       - |
         echo "Step 1: Running core database migrations..."
         airflow db migrate
-        
+
         echo "Step 2: Creating static admin user account..."
         airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin
-        
+
         echo "Step 3: Database setup complete. Initializing background engines..."
         airflow scheduler &
         airflow triggerer &
         airflow dag-processor &
-        
+
         echo "Step 4: Launching Airflow 3 UI API Server..."
         exec airflow api-server --port 8080
-        
+
   spark:
     image: apache/spark:4.1.2
     container_name: streamflow-spark
