@@ -14,6 +14,8 @@ def main():
         .getOrCreate()
     )
 
+    spark.sparkContext.setLogLevel("WARN")
+
     input_path = "/opt/streamflow/data/raw/smoke_test_output"
 
     output_path = "/opt/streamflow/data/curated/daily_summary"
