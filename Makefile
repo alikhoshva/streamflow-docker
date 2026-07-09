@@ -11,6 +11,7 @@ help:
 
 up:
 	mkdir -p logs/airflow
+	chmod -R 777 logs/airflow || true
 	docker compose -f docker/compose.yml up -d
 
 down:

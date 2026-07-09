@@ -34,13 +34,10 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-    entrypoint: [ "/opt/kafka/bin/kafka-topics.sh" ]
-    command: >
-      --create --if-not-exists
-      --bootstrap-server kafka:29092
-      --partitions 1
-      --replication-factor 1
-      --topic streamflow.events
+    volumes:
+      - ../kafka:/opt/streamflow/kafka
+      - ../config:/opt/streamflow/config
+    entrypoint: [ "bash", "/opt/streamflow/kafka/init-topics.sh" ]
 
   producer:
     build:
@@ -52,10 +49,9 @@ services:
         condition: service_healthy
       init-kafka:
         condition: service_completed_successfully
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
     volumes:
       - ../logs:/opt/streamflow/logs
+      - ../config:/opt/streamflow/config
     command: >
       bash -c "python src/streamflow/producer.py 2>&1 | tee /opt/streamflow/logs/producer.log"
 
@@ -112,10 +108,6 @@ services:
       - ../data:/opt/streamflow/data
       - ../logs:/opt/streamflow/logs
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - PYTHONPATH=/opt/streamflow/src:/tmp/pip-packages
-      - RAW_OUTPUT_PATH=/opt/streamflow/data/raw
-      - REJECTS_OUTPUT_PATH=/opt/streamflow/data/rejects
-      - CHECKPOINT_LOCATION=/opt/streamflow/data/checkpoints/raw
     command: >
       bash -c " python3 -m pip install --no-cache-dir --target /tmp/pip-packages pyyaml structlog && /opt/spark/bin/spark-submit --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.2 /opt/airflow/jobs/streaming_ingest.py 2>&1 | tee /opt/streamflow/logs/spark.log "

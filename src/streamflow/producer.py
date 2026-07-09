@@ -41,7 +41,9 @@ import signal
 import time
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 
+import yaml
 from kafka import KafkaProducer
 
 logger = logging.getLogger("streamflow.producer")
@@ -120,8 +122,31 @@ def generate_inventory_event(rng: random.Random | None = None) -> dict:
     }
 
 
-def _build_kafka_producer() -> KafkaProducer:
-    bootstrap_servers = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
+def _load_pipeline_config() -> dict:
+    project_root = Path(__file__).resolve().parent.parent.parent.parent
+    config_paths = [
+        "/opt/streamflow/config/pipeline.yml",
+        project_root / "config" / "pipeline.yml",
+        "config/pipeline.yml"
+    ]
+    config = {}
+    for path in config_paths:
+        try:
+            path = Path(path)
+            if path.exists():
+                with open(path, "r") as f:
+                    config = yaml.safe_load(f) or {}
+                break
+        except Exception:
+            pass
+    return config
+
+
+def _build_kafka_producer(config: dict) -> KafkaProducer:
+    bootstrap_servers = os.environ.get(
+        "KAFKA_BOOTSTRAP_SERVERS",
+        config.get("kafka", {}).get("bootstrap_servers", "localhost:9092")
+    )
     return KafkaProducer(
         bootstrap_servers=bootstrap_servers.split(","),
         value_serializer=lambda value: json.dumps(value).encode("utf-8"),
@@ -132,13 +157,16 @@ def _build_kafka_producer() -> KafkaProducer:
 
 
 def start_producer() -> None:
+    config = _load_pipeline_config()
+
+    log_level = os.environ.get("LOG_LEVEL", config.get("producer", {}).get("log_level", "INFO"))
     logging.basicConfig(
-        level=os.environ.get("LOG_LEVEL", "INFO"),
+        level=log_level,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
 
-    topic = os.environ.get("KAFKA_TOPIC", "streamflow.events")
-    events_per_second = float(os.environ.get("EVENTS_PER_SECOND", "2"))
+    topic = os.environ.get("KAFKA_TOPIC", config.get("kafka", {}).get("topic", "streamflow.events"))
+    events_per_second = float(os.environ.get("EVENTS_PER_SECOND", config.get("producer", {}).get("events_per_second", "2")))
     sleep_interval = 1.0 / events_per_second if events_per_second > 0 else 0.0
 
     logger.info(
@@ -146,7 +174,7 @@ def start_producer() -> None:
         topic, events_per_second, len(SKU_CATALOG),
     )
 
-    producer = _build_kafka_producer()
+    producer = _build_kafka_producer(config)
 
     stop_requested = False
 
