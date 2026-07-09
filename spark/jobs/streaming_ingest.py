@@ -58,6 +58,8 @@ def main():
         .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.2") \
         .getOrCreate()
 
+    spark.sparkContext.setLogLevel("WARN")
+
     raw_kafka_stream = spark.readStream \
         .format("kafka") \
         .option("kafka.bootstrap.servers", broker) \

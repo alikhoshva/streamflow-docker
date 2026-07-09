@@ -95,3 +95,9 @@ devenv.local.yaml
 
 # pre-commit
 .pre-commit-config.yaml
+
+# Log files
+logs/*
+logs/**/*.log
+!logs/.gitkeep
+

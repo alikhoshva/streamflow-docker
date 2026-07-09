@@ -54,6 +54,10 @@ services:
         condition: service_completed_successfully
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    volumes:
+      - ../logs:/opt/streamflow/logs
+    command: >
+      bash -c "python src/streamflow/producer.py 2>&1 | tee /opt/streamflow/logs/producer.log"
 
 
   airflow:
@@ -68,13 +72,14 @@ services:
       - ../spark/jobs:/opt/airflow/jobs
       - ../config:/opt/streamflow/config
       - ../data:/opt/streamflow/data
+      - ../logs/airflow:/opt/airflow/logs
     environment:
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       # Airflow 3 settings to disable authentication for local development sandbox
       - AIRFLOW__WEBSERVER__AUTH_BACKEND=airflow.providers.fab.auth_manager.api.auth.backend.noauth
     command: >
-      bash -c " echo 'Running database migrations...' && airflow db migrate &&  sleep 2 && echo 'Launching core Airflow web engine...' && airflow standalone"
+      bash -c " echo 'Running database migrations...' && airflow db migrate &&  sleep 2 && echo 'Launching core Airflow web engine...' && airflow standalone 2>&1 | tee /opt/airflow/logs/airflow-stdout.log"
 
   spark:
     image: apache/spark:4.1.2
@@ -90,6 +95,7 @@ services:
       - ../src:/opt/streamflow/src
       - ../config:/opt/streamflow/config
       - ../data:/opt/streamflow/data
+      - ../logs:/opt/streamflow/logs
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - PYTHONPATH=/opt/streamflow/src:/tmp/pip-packages
@@ -97,4 +103,4 @@ services:
       - REJECTS_OUTPUT_PATH=/opt/streamflow/data/rejects
       - CHECKPOINT_LOCATION=/opt/streamflow/data/checkpoints/raw
     command: >
-      bash -c " python3 -m pip install --no-cache-dir --target /tmp/pip-packages pyyaml structlog && /opt/spark/bin/spark-submit --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.2 /opt/airflow/jobs/streaming_ingest.py "
+      bash -c " python3 -m pip install --no-cache-dir --target /tmp/pip-packages pyyaml structlog && /opt/spark/bin/spark-submit --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.2 /opt/airflow/jobs/streaming_ingest.py 2>&1 | tee /opt/streamflow/logs/spark.log "
