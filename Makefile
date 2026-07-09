@@ -1,4 +1,4 @@
-.PHONY: help up down clean test
+.PHONY: help up down clean test logs
 
 # Default target
 help:
@@ -7,8 +7,10 @@ help:
 	@echo "  make down    - Stop Docker services and clean data directories"
 	@echo "  make clean   - Purge all raw, curated, rejects, and checkpoints"
 	@echo "  make test    - Run clean data targets, then run pytest suite"
+	@echo "  make logs    - Live-stream logs from all services"
 
 up:
+	mkdir -p logs/airflow
 	docker compose -f docker/compose.yml up -d
 
 down:
@@ -20,5 +22,8 @@ clean:
 
 test: clean
 	pytest tests/
+
+logs:
+	docker compose -f docker/compose.yml logs -f
 
 

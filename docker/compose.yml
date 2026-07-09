@@ -9,18 +9,38 @@ services:
       - KAFKA_NODE_ID=1
       - KAFKA_PROCESS_ROLES=broker,controller
       - KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9093
-      
+
       # Dual-listener setup: PLAINTEXT for host, INTERNAL for docker containers
       - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,INTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
       - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
       - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      
+
       # Replication defaults for a single-node development cluster
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
       - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
       - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+    healthcheck:
+      test: [ "CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  init-kafka:
+    image: apache/kafka:4.3.1
+    container_name: streamflow-init-kafka
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: [ "/opt/kafka/bin/kafka-topics.sh" ]
+    command: >
+      --create --if-not-exists
+      --bootstrap-server kafka:29092
+      --partitions 1
+      --replication-factor 1
+      --topic streamflow.events
 
   producer:
     build:
@@ -28,9 +48,17 @@ services:
       dockerfile: docker/producer.Dockerfile
     container_name: streamflow-producer
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
+      init-kafka:
+        condition: service_completed_successfully
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    volumes:
+      - ../logs:/opt/streamflow/logs
+    command: >
+      bash -c "python src/streamflow/producer.py 2>&1 | tee /opt/streamflow/logs/producer.log"
+
 
   airflow:
     build:
@@ -44,25 +72,35 @@ services:
       - ../spark/jobs:/opt/airflow/jobs
       - ../config:/opt/streamflow/config
       - ../data:/opt/streamflow/data
+      - ../logs/airflow:/opt/airflow/logs
     environment:
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      - AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-      - AIRFLOW__WEBSERVER__AUTH_BACKEND=airflow.providers.fab.auth_manager.api.auth.backend.session.SessionAuthBackend
-    command:
-      - bash
-      - -c
-      - |
-        echo "Step 1: Running core database migrations..."
-        airflow db migrate
-        
-        echo "Step 2: Creating static admin user account..."
-        airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin
-        
-        echo "Step 3: Database setup complete. Initializing background background engines..."
-        airflow scheduler &
-        airflow triggerer &
-        airflow dag-processor &
-        
-        echo "Step 4: Launching Airflow 3 UI API Server..."
-        exec airflow api-server --port 8080
+      # Airflow 3 settings to disable authentication for local development sandbox
+      - AIRFLOW__WEBSERVER__AUTH_BACKEND=airflow.providers.fab.auth_manager.api.auth.backend.noauth
+    command: >
+      bash -c " echo 'Running database migrations...' && airflow db migrate &&  sleep 2 && echo 'Launching core Airflow web engine...' && airflow standalone 2>&1 | tee /opt/airflow/logs/airflow-stdout.log"
+
+  spark:
+    image: apache/spark:4.1.2
+    container_name: streamflow-spark
+    user: root
+    depends_on:
+      kafka:
+        condition: service_healthy
+      init-kafka:
+        condition: service_completed_successfully
+    volumes:
+      - ../spark/jobs:/opt/airflow/jobs
+      - ../src:/opt/streamflow/src
+      - ../config:/opt/streamflow/config
+      - ../data:/opt/streamflow/data
+      - ../logs:/opt/streamflow/logs
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - PYTHONPATH=/opt/streamflow/src:/tmp/pip-packages
+      - RAW_OUTPUT_PATH=/opt/streamflow/data/raw
+      - REJECTS_OUTPUT_PATH=/opt/streamflow/data/rejects
+      - CHECKPOINT_LOCATION=/opt/streamflow/data/checkpoints/raw
+    command: >
+      bash -c " python3 -m pip install --no-cache-dir --target /tmp/pip-packages pyyaml structlog && /opt/spark/bin/spark-submit --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.2 /opt/airflow/jobs/streaming_ingest.py 2>&1 | tee /opt/streamflow/logs/spark.log "
