@@ -34,13 +34,10 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-    entrypoint: [ "/opt/kafka/bin/kafka-topics.sh" ]
-    command: >
-      --create --if-not-exists
-      --bootstrap-server kafka:29092
-      --partitions 1
-      --replication-factor 1
-      --topic streamflow.events
+    volumes:
+      - ../kafka:/opt/streamflow/kafka
+      - ../config:/opt/streamflow/config
+    entrypoint: [ "bash", "/opt/streamflow/kafka/init-topics.sh" ]
 
   producer:
     build:
