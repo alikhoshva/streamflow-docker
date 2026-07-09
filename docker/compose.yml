@@ -47,12 +47,22 @@ services:
     environment:
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-      # Airflow 3 settings to disable authentication for local development sandbox
-      - AIRFLOW__WEBSERVER__AUTH_BACKEND=airflow.providers.fab.auth_manager.api.auth.backend.noauth
-    command: >
-      bash -c "
-      echo 'Running database migrations...' &&
-      airflow db migrate && 
-      sleep 2 &&
-      echo 'Launching core Airflow web engine...' &&
-      airflow standalone"
+      - AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+      - AIRFLOW__WEBSERVER__AUTH_BACKEND=airflow.providers.fab.auth_manager.api.auth.backend.session.SessionAuthBackend
+    command:
+      - bash
+      - -c
+      - |
+        echo "Step 1: Running core database migrations..."
+        airflow db migrate
+        
+        echo "Step 2: Creating static admin user account..."
+        airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin
+        
+        echo "Step 3: Database setup complete. Initializing background background engines..."
+        airflow scheduler &
+        airflow triggerer &
+        airflow dag-processor &
+        
+        echo "Step 4: Launching Airflow 3 UI API Server..."
+        exec airflow api-server --port 8080
