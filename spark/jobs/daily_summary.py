@@ -34,6 +34,7 @@ def main():
         SparkSession.builder
         .master("local[*]")
         .appName(app_name)
+        .config("spark.hadoop.fs.permissions.umask-mode", "000")
         .getOrCreate()
     )
 
@@ -62,7 +63,7 @@ def main():
         )
     )
 
-    top_items.write \
+    top_items.coalesce(1).write \
         .mode("overwrite") \
         .parquet(
             f"{output_path}/top_items"
@@ -78,7 +79,7 @@ def main():
         )
     )
 
-    low_stock_alerts.write \
+    low_stock_alerts.coalesce(1).write \
         .mode("overwrite") \
         .parquet(
             f"{output_path}/low_stock_alerts"

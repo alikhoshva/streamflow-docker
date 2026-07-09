@@ -56,6 +56,7 @@ def main():
     spark = SparkSession.builder \
         .appName(app_name) \
         .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.2") \
+        .config("spark.hadoop.fs.permissions.umask-mode", "000") \
         .getOrCreate()
 
     spark.sparkContext.setLogLevel("WARN")
