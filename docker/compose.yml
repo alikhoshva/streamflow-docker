@@ -9,24 +9,38 @@ services:
       - KAFKA_NODE_ID=1
       - KAFKA_PROCESS_ROLES=broker,controller
       - KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9093
-      
+
       # Dual-listener setup: PLAINTEXT for host, INTERNAL for docker containers
       - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,INTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
       - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
       - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      
+
       # Replication defaults for a single-node development cluster
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
       - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
       - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
     healthcheck:
-      test: ["CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092"]
+      test: [ "CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092" ]
       interval: 5s
       timeout: 5s
       retries: 10
       start_period: 5s
+
+  init-kafka:
+    image: apache/kafka:4.3.1
+    container_name: streamflow-init-kafka
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: [ "/opt/kafka/bin/kafka-topics.sh" ]
+    command: >
+      --create --if-not-exists
+      --bootstrap-server kafka:29092
+      --partitions 1
+      --replication-factor 1
+      --topic streamflow.events
 
   producer:
     build:
@@ -36,8 +50,11 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
+      init-kafka:
+        condition: service_completed_successfully
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+
 
   airflow:
     build:
@@ -57,12 +74,7 @@ services:
       # Airflow 3 settings to disable authentication for local development sandbox
       - AIRFLOW__WEBSERVER__AUTH_BACKEND=airflow.providers.fab.auth_manager.api.auth.backend.noauth
     command: >
-      bash -c "
-      echo 'Running database migrations...' &&
-      airflow db migrate && 
-      sleep 2 &&
-      echo 'Launching core Airflow web engine...' &&
-      airflow standalone"
+      bash -c " echo 'Running database migrations...' && airflow db migrate &&  sleep 2 && echo 'Launching core Airflow web engine...' && airflow standalone"
 
   spark:
     image: apache/spark:4.1.2
@@ -71,6 +83,8 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
+      init-kafka:
+        condition: service_completed_successfully
     volumes:
       - ../spark/jobs:/opt/airflow/jobs
       - ../src:/opt/streamflow/src
@@ -83,10 +97,4 @@ services:
       - REJECTS_OUTPUT_PATH=/opt/streamflow/data/rejects
       - CHECKPOINT_LOCATION=/opt/streamflow/data/checkpoints/raw
     command: >
-      bash -c "
-      python3 -m pip install --no-cache-dir --target /tmp/pip-packages pyyaml structlog &&
-      /opt/spark/bin/spark-submit
-      --conf spark.jars.ivy=/tmp/.ivy2
-      --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.2
-      /opt/airflow/jobs/streaming_ingest.py
-      "
+      bash -c " python3 -m pip install --no-cache-dir --target /tmp/pip-packages pyyaml structlog && /opt/spark/bin/spark-submit --conf spark.jars.ivy=/tmp/.ivy2 --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.1.2 /opt/airflow/jobs/streaming_ingest.py "
