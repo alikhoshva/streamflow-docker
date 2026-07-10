@@ -43,6 +43,9 @@ services:
     volumes:
       - ../logs:/opt/streamflow/logs
       - ../config:/opt/streamflow/config
+      - ../data:/opt/streamflow/data
+      - ../data:/app/data
+      - ../src:/app/src
     command: >
       bash -c "python src/streamflow/producer.py 2>&1 | tee /opt/streamflow/logs/producer.log"
 

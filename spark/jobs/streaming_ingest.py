@@ -52,6 +52,7 @@ def main():
     raw_path = os.environ.get("RAW_OUTPUT_PATH", config.get("spark", {}).get("raw_output_path", "data/raw"))
     rejects_path = os.environ.get("REJECTS_OUTPUT_PATH", config.get("spark", {}).get("rejects_output_path", "data/rejects"))
     checkpoint_location = os.environ.get("CHECKPOINT_LOCATION", config.get("spark", {}).get("checkpoint_location", "data/checkpoints/raw"))
+    trigger_interval = os.environ.get("SPARK_TRIGGER_INTERVAL", config.get("spark", {}).get("trigger_interval", "10 seconds"))
 
     spark = SparkSession.builder \
         .appName(app_name) \
@@ -112,12 +113,12 @@ def main():
 
         # Write to raw / rejects
         if valid_count > 0:
-            valid_df.write \
+            valid_df.coalesce(1).write \
                 .mode("append") \
                 .parquet(raw_path)
 
         if invalid_count > 0:
-            invalid_df.write \
+            invalid_df.coalesce(1).write \
                 .mode("append") \
                 .parquet(rejects_path)
 
@@ -141,6 +142,7 @@ def main():
 
     query = parsed_df.writeStream \
         .foreachBatch(process_batch) \
+        .trigger(processingTime=trigger_interval) \
         .option("checkpointLocation", checkpoint_location) \
         .start()
 
