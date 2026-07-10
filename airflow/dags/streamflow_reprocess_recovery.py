@@ -41,7 +41,7 @@ with DAG(
     # Task 1: Submit the Spark App to triage and re-inject healed records
     execute_recovery_job = SparkSubmitOperator(
         task_id='submit_spark_reprocessing_job',
-        application='/opt/airflow/jobs/reprocess_rejects_job.py',
+        application='/opt/airflow/jobs/reprocess_rejects.py',
         conn_id='spark_default',
         name='StreamflowAutomatedReprocessorBatch',
         conf={
