@@ -101,3 +101,15 @@ logs/*
 logs/**/*.log
 !logs/.gitkeep
 
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*.vrb
+*.out
+
