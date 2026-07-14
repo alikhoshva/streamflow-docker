@@ -31,6 +31,6 @@ logs:
 	docker compose -f docker/compose.yml logs -f
 
 slides:
-	docker run --rm -v $(shell pwd)/presentation:/workdir -w /workdir ghcr.io/xu-cheng/texlive-full latexmk -pdf -interaction=nonstopmode slides.tex
+	docker run --platform linux/amd64 --rm -v $(shell pwd)/presentation:/workdir -w /workdir ghcr.io/xu-cheng/texlive-full latexmk -pdf -interaction=nonstopmode slides.tex
 
 
