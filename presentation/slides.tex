@@ -1,0 +1,134 @@
+\documentclass[10pt]{beamer}
+
+% --- Theme Selection ---
+% Metropolis is a modern, clean, and elegant Beamer theme.
+% If Metropolis is not desired, you can use traditional ones like:
+% \usetheme{Madrid}, \usetheme{Boadilla}, \usetheme{Warsaw}
+\usetheme{metropolis}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% --- Metadata ---
+\title{Streamflow Docker Presentation}
+\subtitle{A Modern Blueprint for LaTeX Beamer Slides}
+\date{\today}
+\author{Aleks}
+\institute{Revaturea}
+% Optional: \titlegraphic{\hfill\includegraphics[height=1.5cm]{logo.png}}
+
+% --- Custom Colors & Settings (Optional customization for Metropolis) ---
+% \definecolor{customDark}{HTML}{23373B}
+% \definecolor{customLight}{HTML}{EB811B}
+% \setbeamercolor{palette primary}{fg=white, bg=customDark}
+% \setbeamercolor{alerted text}{fg=customLight}
+
+% --- Code Block Settings (listings) ---
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  backgroundcolor=\color{gray!10},
+  frame=single,
+  rulecolor=\color{gray!30},
+  keywordstyle=\color{blue},
+  commentstyle=\color{green!50!black},
+  stringstyle=\color{orange}
+}
+
+\begin{document}
+
+% -----------------------------------------------------------------
+% Slide 1: Title Page
+% -----------------------------------------------------------------
+\maketitle
+
+% -----------------------------------------------------------------
+% Slide 2: Table of Contents / Outline
+% -----------------------------------------------------------------
+\begin{frame}{Outline}
+  \setbeamertemplate{section in toc}[sections numbered]
+  \tableofcontents[hideallsubsections]
+\end{frame}
+
+% =================================================================
+\section{Introduction \& Features}
+% =================================================================
+
+% -----------------------------------------------------------------
+% Slide 3: Basic Text and Lists
+% -----------------------------------------------------------------
+\begin{frame}{Introduction to streamflow-docker}
+  \begin{itemize}
+    \item **Containerized Data Engineering**: Standardized environment for Spark, Kafka, and Airflow.
+    \item **Docker-based LaTeX Compilation**: Build slides seamlessly using LaTeX Workshop's Docker integration.
+    \item **Metropolis Theme**: Clean layout focused on typography and content, avoiding visual clutter.
+    \item \pause **Interactive Elements**: Use standard Beamer overlay commands to reveal points sequentially.
+  \end{itemize}
+\end{frame}
+
+% -----------------------------------------------------------------
+% Slide 4: Using Columns (Side-by-Side Layout)
+% -----------------------------------------------------------------
+\begin{frame}[fragile]{Flexible Page Layouts (Columns)}
+  \begin{columns}[T] % T aligns columns at the top
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Left Column (Text/Concepts)}
+      \begin{itemize}
+        \item Perfect for explaining a diagram or listing details.
+        \item Keeps slides readable by dividing content horizontally.
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \textbf{Right Column (Code / Callouts)}
+      \begin{lstlisting}[language=bash]
+# To start the pipeline:
+make up
+
+# To tear down and clean:
+make down
+      \end{lstlisting}
+    \end{column}
+    
+  \end{columns}
+\end{frame}
+
+% =================================================================
+\section{Blocks and Formatting}
+% =================================================================
+
+% -----------------------------------------------------------------
+% Slide 5: Standard, Alert, and Example Blocks
+% -----------------------------------------------------------------
+\begin{frame}{Emphasizing Content with Blocks}
+  
+  \begin{block}{Standard Block}
+    Use standard blocks for definitions, core notes, or general information.
+  \end{block}
+  
+  \begin{alertblock}{Alert Block}
+    Use alert blocks for warnings, critical takeaways, or equations.
+  \end{alertblock}
+  
+  \begin{exampleblock}{Example Block}
+    Use example blocks to highlight code snippets, cases, or illustrations.
+  \end{exampleblock}
+
+\end{frame}
+
+% -----------------------------------------------------------------
+% Slide 6: Conclusion / Q&A
+% -----------------------------------------------------------------
+\begin{frame}[standout]
+  Questions \& Discussion
+  
+  \vspace{1em}
+  \small\texttt{aleks@revature.com}
+\end{frame}
+
+\end{document}

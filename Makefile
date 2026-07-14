@@ -1,4 +1,4 @@
-.PHONY: help up down clean test logs
+.PHONY: help up down clean test logs slides
 
 # Default target
 help:
@@ -8,6 +8,7 @@ help:
 	@echo "  make clean   - Purge all raw, curated, rejects, and checkpoints"
 	@echo "  make test    - Run clean data targets, then run pytest suite"
 	@echo "  make logs    - Live-stream logs from all services"
+	@echo "  make slides  - Compile the LaTeX slides presentation using Docker"
 
 up:
 	mkdir -p logs/airflow
@@ -28,5 +29,8 @@ test: clean
 
 logs:
 	docker compose -f docker/compose.yml logs -f
+
+slides:
+	docker run --rm -v $(shell pwd)/presentation:/workdir -w /workdir ghcr.io/xu-cheng/texlive-full latexmk -pdf -interaction=nonstopmode slides.tex
 
 
