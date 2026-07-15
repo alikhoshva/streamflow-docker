@@ -1,0 +1,60 @@
+PowerPoint Outline
+Slide 1: Title Slide
+Project Title: "StreamFlow Phase 1: Containerized Stream Processing Platform"
+Subtitle: "Real-Time Event Ingestion, Quality Curating, and Workflow Orchestration"
+Team Members’ Names
+Training Weeks 6-8 | Date
+Slide 2: Outline
+Architectural Objectives
+System Architecture & Data Flow
+The Data Contract & Quality Framework
+Processing & Orchestration Strategy
+End-to-End Demo
+Challenges & Key Takeaways
+Slide 3: Project Objectives & Scope
+Design an end-to-end, fully containerized streaming data platform locally.
+Move from continuous event-driven stream loops to bounded, repeatable downstream batches.
+Key focus areas: Schema enforcement, micro-batch architecture patterns, and structured data decoupling.
+Slide 4: System Architecture
+Mermaid Data Flow Diagram:
+Producer $\rightarrow$ Kafka/Redpanda Topic (streamflow.events) $\rightarrow$ Spark Structured Streaming Ingest $\rightarrow$ Raw Parquet Storage + Checkpoint Dir.
+Raw Parquet $\rightarrow$ Spark Batch Summary Job $\rightarrow$ Curated Summary Outputs & Airflow Logs.
+Core isolation using Docker Compose.
+Slide 5: Event Data Contract & Domain
+Structured JSON layout featuring: event_id, event_type, event_ts, source, entity_id, and payload.
+Showcase of the chosen operational domain (e.g., IoT telemetry, e-commerce clicks, financial transactions).
+Externalized pipeline environment configurations (bootstrap_servers, paths, allowed filters).
+Slide 6: Stream Ingestion & Checkpointing
+Spark Structured Streaming Ingest (streaming_ingest.py):
+Consumes incrementally from the broker topic.
+Enforces state durability and fault tolerance using dedicated storage checkpointing locations.
+Direct file write outs directly to structured raw Parquet formats.
+Slide 7: Data Quality & Rules Engine
+Validation Layer: Enforcing structural integrity at the processing edge.
+Rule definitions (Required fields, timestamp parseability, value list filters).
+Data Splitting Strategy:
+Curated Stream Destination: Schema-compliant records.
+Rejected Stream Destination: Corrupted/invalid records written alongside distinct failure reasons.
+Slide 8: Workflow Orchestration (Apache Airflow)
+Bounded task isolation inside the DAG (streamflow_daily_summary.py).
+Airflow's primary responsibilities:
+Triggering the finite summary execution (daily_summary.py).
+Conducting downstream output state validation.
+Publishing unified run execution metadata.
+Slide 9: Live Demo
+Docker Compose health check status.
+Running the custom Event Generator.
+Monitoring real-time logging output (Input/Valid/Rejected row metrics).
+Airflow UI demonstration showcasing successful task completion.
+Slide 10: Engineering Challenges
+Broker network loops and inter-container connectivity inside Docker Compose.
+Parsing multi-nested JSON payloads smoothly into typed Spark DataFrames.
+State management nuances during Spark streaming file system checkpointing.
+Slide 11: Future Enhancements (Stretch Goals)
+Transitioning storage frameworks to local S3-compliant object storage engines (MinIO).
+Incorporating enterprise data testing layers via Great Expectations.
+Introducing windowed streaming aggregations and Kafka multi-topic routing.
+Slide 12: Conclusion & Definition of Done
+Successfully delivered a working prototype proving core data engineering patterns.
+Achieved unified monitoring logs outlining performance metrics.
+Q&A: Open floor for questions.

@@ -1,43 +1,49 @@
 \documentclass[10pt]{beamer}
 
-% --- Theme Selection ---
-% Metropolis is a modern, clean, and elegant Beamer theme.
-% If Metropolis is not desired, you can use traditional ones like:
-% \usetheme{Madrid}, \usetheme{Boadilla}, \usetheme{Warsaw}
+% --- Theme & Package Configuration ---
 \usetheme{metropolis}
+\metroset{background=light} % Light background for all slides
+\metroset{block=fill}       % Modern filled block style
 
-% --- Packages ---
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{xcolor}
-\usepackage{listings}
+
+% --- Custom Corporate Color Palette (White/Off-White Based) ---
+\definecolor{charcoal}{HTML}{2C3E50}    % Deep slate/charcoal for dominant text
+\definecolor{softwhite}{HTML}{FAFAFA}   % Off-white background for slides
+\definecolor{purewhite}{HTML}{FFFFFF}   % Pure white background for blocks
+\definecolor{slateTeal}{HTML}{006666}   % Dark teal accent color for headers/structure
+\definecolor{softTeal}{HTML}{E0F2F1}    % 10% opacity equivalent for block bodies
+\definecolor{lightGray}{HTML}{F4F6F6}   % Very light gray block backgrounds
+\definecolor{alertRed}{HTML}{900C3F}    % Deep red for warnings
+\definecolor{softRed}{HTML}{FADBD8}     % Soft red for alert block bodies
+
+% --- Apply Custom Colors to Beamer Elements ---
+\setbeamercolor{normal text}{fg=charcoal, bg=softwhite}
+\setbeamercolor{alerted text}{fg=alertRed}
+\setbeamercolor{example text}{fg=slateTeal}
+\setbeamercolor{structure}{fg=slateTeal}
+
+\setbeamercolor{frametitle}{fg=white, bg=slateTeal}
+
+% --- Block Styling Configurations ---
+\setbeamercolor{block title}{fg=white, bg=slateTeal}
+\setbeamercolor{block body}{fg=charcoal, bg=lightGray}
+
+\setbeamercolor{block title alerted}{fg=white, bg=alertRed}
+\setbeamercolor{block body alerted}{fg=charcoal, bg=softRed}
+
+\setbeamercolor{block title example}{fg=white, bg=charcoal}
+\setbeamercolor{block body example}{fg=charcoal, bg=lightGray}
 
 % --- Metadata ---
-\title{Streamflow Docker Presentation}
-\subtitle{A Modern Blueprint for LaTeX Beamer Slides}
+\title{StreamFlow Phase 1}
+\subtitle{Containerized Stream Processing Platform}
+\author{Mason Muscarello \and Paul Yoo \and Aleksandr Likhoshva \and Taranjit Singh}
+\institute{Revature}
 \date{\today}
-\author{Aleks}
-\institute{Revaturea}
-% Optional: \titlegraphic{\hfill\includegraphics[height=1.5cm]{logo.png}}
-
-% --- Custom Colors & Settings (Optional customization for Metropolis) ---
-% \definecolor{customDark}{HTML}{23373B}
-% \definecolor{customLight}{HTML}{EB811B}
-% \setbeamercolor{palette primary}{fg=white, bg=customDark}
-% \setbeamercolor{alerted text}{fg=customLight}
-
-% --- Code Block Settings (listings) ---
-\lstset{
-  basicstyle=\ttfamily\footnotesize,
-  breaklines=true,
-  backgroundcolor=\color{gray!10},
-  frame=single,
-  rulecolor=\color{gray!30},
-  keywordstyle=\color{blue},
-  commentstyle=\color{green!50!black},
-  stringstyle=\color{orange}
-}
 
 \begin{document}
 
@@ -47,88 +53,227 @@
 \maketitle
 
 % -----------------------------------------------------------------
-% Slide 2: Table of Contents / Outline
+% Slide 2: Outline / Agenda
 % -----------------------------------------------------------------
 \begin{frame}{Outline}
-  \setbeamertemplate{section in toc}[sections numbered]
-  \tableofcontents[hideallsubsections]
-\end{frame}
-
-% =================================================================
-\section{Introduction \& Features}
-% =================================================================
-
-% -----------------------------------------------------------------
-% Slide 3: Basic Text and Lists
-% -----------------------------------------------------------------
-\begin{frame}{Introduction to streamflow-docker}
   \begin{itemize}
-    \item **Containerized Data Engineering**: Standardized environment for Spark, Kafka, and Airflow.
-    \item **Docker-based LaTeX Compilation**: Build slides seamlessly using LaTeX Workshop's Docker integration.
-    \item **Metropolis Theme**: Clean layout focused on typography and content, avoiding visual clutter.
-    \item \pause **Interactive Elements**: Use standard Beamer overlay commands to reveal points sequentially.
+    \item \textbf{01. Architectural Objectives}
+    \item \textbf{02. System Architecture \& Data Flow}
+    \item \textbf{03. The Data Contract \& Quality Framework}
+    \item \textbf{04. Processing \& Orchestration Strategy}
+    \item \textbf{05. End-to-End Execution \& Metrics}
+    \item \textbf{06. Engineering Challenges \& Key Takeaways}
   \end{itemize}
 \end{frame}
 
 % -----------------------------------------------------------------
-% Slide 4: Using Columns (Side-by-Side Layout)
+% Slide 3: Project Objectives & Scope
 % -----------------------------------------------------------------
-\begin{frame}[fragile]{Flexible Page Layouts (Columns)}
-  \begin{columns}[T] % T aligns columns at the top
-    
-    \begin{column}{0.5\textwidth}
-      \textbf{Left Column (Text/Concepts)}
-      \begin{itemize}
-        \item Perfect for explaining a diagram or listing details.
-        \item Keeps slides readable by dividing content horizontally.
-      \end{itemize}
+\begin{frame}{Project Objectives \& Scope}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Core Objectives}
+        \begin{itemize}
+          \item \textbf{Containerized Flow}: Standardize the developer environment locally using Docker.
+          \item \textbf{In-Stream Auditing}: Validate schemas and enforce strict constraints at ingestion.
+        \end{itemize}
+      \end{block}
     \end{column}
     
-    \begin{column}{0.5\textwidth}
-      \textbf{Right Column (Code / Callouts)}
-      \begin{lstlisting}[language=bash]
-# To start the pipeline:
-make up
-
-# To tear down and clean:
-make down
-      \end{lstlisting}
-    \end{column}
+    \hfill
     
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Architecture Shift}
+        \begin{itemize}
+          \item \textbf{Decoupled Design}: Isolate continuous event streams from scheduled downstream aggregate runs.
+          \item \textbf{Bounded Batches}: Transition from infinite stream loops to repeatable daily batch summaries.
+        \end{itemize}
+      \end{block}
+    \end{column}
   \end{columns}
 \end{frame}
 
-% =================================================================
-\section{Blocks and Formatting}
-% =================================================================
-
 % -----------------------------------------------------------------
-% Slide 5: Standard, Alert, and Example Blocks
+% Slide 4: System Architecture
 % -----------------------------------------------------------------
-\begin{frame}{Emphasizing Content with Blocks}
-  
-  \begin{block}{Standard Block}
-    Use standard blocks for definitions, core notes, or general information.
+\begin{frame}{System Architecture \& Data Flow}
+  \begin{block}{Data Processing Pipeline}
+    \begin{enumerate}
+      \item \textbf{Event Ingestion}: Python Event Producer publishes transactional events to a local Apache Kafka broker topic.
+      \item \textbf{Streaming Ingestion}: Spark Structured Streaming consumes events incrementally, parses payloads, and checks quality.
+      \item \textbf{Isolation Storage}: Valid events are saved to \texttt{data/raw/}; rejected events go to \texttt{data/rejects/}.
+      \item \textbf{Workflow Orchestration}: Apache Airflow coordinates batch jobs, executing daily summaries and validating downstream files.
+    \end{enumerate}
   \end{block}
-  
-  \begin{alertblock}{Alert Block}
-    Use alert blocks for warnings, critical takeaways, or equations.
-  \end{alertblock}
-  
-  \begin{exampleblock}{Example Block}
-    Use example blocks to highlight code snippets, cases, or illustrations.
-  \end{exampleblock}
-
 \end{frame}
 
 % -----------------------------------------------------------------
-% Slide 6: Conclusion / Q&A
+% Slide 5: Event Data Contract \& Domain
+% -----------------------------------------------------------------
+\begin{frame}{Event Data Contract \& Domain}
+  \begin{block}{Retail Inventory Management Domain}
+    Using transactional inventory events (\texttt{inventory.stock\_change}) generated by the streamflow producer.
+  \end{block}
+
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Envelope Schema}
+        \begin{itemize}
+          \item \texttt{event\_id}: String (UUID)
+          \item \texttt{event\_type}: String
+          \item \texttt{event\_ts}: ISO 8601 Timestamp
+          \item \texttt{source}: Identifier
+          \item \texttt{payload}: Nested struct
+        \end{itemize}
+      \end{block}
+    \end{column}
+    
+    \hfill
+    
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Payload Details}
+        \begin{itemize}
+          \item \texttt{sku\_id}: Product ID
+          \item \texttt{quantity\_delta}: Int
+          \item \texttt{current\_stock\_level}: Int
+          \item \texttt{checkout\_lane}: Nullable String
+          \item \texttt{price}: Double
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------
+% Slide 6: Stream Ingestion & Checkpointing
+% -----------------------------------------------------------------
+\begin{frame}{Stream Ingestion \& Checkpointing}
+  \begin{block}{Spark Structured Streaming (\texttt{streaming\_ingest.py})}
+    \begin{itemize}
+      \item Consumes micro-batches incrementally from the Apache Kafka broker.
+      \item Integrates externalized configs (bootstrap servers, topic filters) loaded from \texttt{pipeline.yml} or environment variables.
+      \item Outputs processed records directly to high-performance Parquet format.
+    \end{itemize}
+  \end{block}
+
+  \begin{exampleblock}{Fault Tolerance \& Durability}
+    \begin{itemize}
+      \item Utilizes Spark DFS checkpointing (\texttt{data/checkpoints/raw}) to track read progress.
+      \item Provides state recovery to ensure exactly-once ingestion semantics upon container restart.
+    \end{itemize}
+  \end{exampleblock}
+\end{frame}
+
+% -----------------------------------------------------------------
+% Slide 7: Data Quality & Rules Engine
+% -----------------------------------------------------------------
+\begin{frame}{Data Quality \& Rules Engine}
+  \begin{block}{Validation Framework (\texttt{quality.py})}
+    Performs checks at the processing edge before storage:
+    \begin{itemize}
+      \item \textbf{Structure}: Non-empty fields, valid JSON parse.
+      \item \textbf{Constraints}: Match allowed sources/event types, valid ISO timestamps.
+      \item \textbf{Deduplication}: Identifies duplicates in active micro-batches and joins against historical raw logs to prevent double-processing.
+    \end{itemize}
+  \end{block}
+
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Valid Stream (Parquet)}
+        Clean, schema-compliant events written directly to \texttt{data/raw/}.
+      \end{block}
+    \end{column}
+    
+    \hfill
+    
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Rejected Stream (Audit)}
+        Failing records written to \texttt{data/rejects/} with appended failure reasons.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------
+% Slide 8: Workflow Orchestration (Apache Airflow)
+% -----------------------------------------------------------------
+\begin{frame}{Workflow Orchestration}
+  \begin{block}{DAG: \texttt{streamflow\_daily\_summary}}
+    Airflow coordinates bounded batch aggregation cycles (no infinite streaming loops inside orchestrator).
+  \end{block}
+
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Step 1: Aggregation Job}
+        \textbf{SparkSubmitOperator}:
+        \begin{itemize}
+          \item Triggers batch job \texttt{daily\_summary.py}.
+          \item Summarizes metrics from raw Parquet data.
+          \item Overwrites curated analytical summaries.
+        \end{itemize}
+      \end{block}
+    \end{column}
+    
+    \hfill
+    
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Step 2: Output Validation}
+        \textbf{PythonOperator}:
+        \begin{itemize}
+          \item Validates curated directories exist.
+          \item Checks output files are non-empty.
+          \item Emits job status and metadata.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------
+% Slide 9: Live Demo Walkthrough
+% -----------------------------------------------------------------
+\begin{frame}{Live Demo Walkthrough}
+  \begin{block}{End-to-End Pipeline Verification}
+    \begin{itemize}
+      \item \textbf{Setup}: Spin up environment using \texttt{make up}. Check Docker health status.
+      \item \textbf{Ingestion}: Start the python-based producer to begin streaming transactional events into Kafka.
+      \item \textbf{Aggregation}: Run tests or trigger Airflow DAG from web UI (\texttt{localhost:8080}) to aggregate records.
+      \item \textbf{Verification}: Inspect output directories (\texttt{data/raw/}, \texttt{data/rejects/}, \texttt{data/curated/}) to verify pipeline success.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+% -----------------------------------------------------------------
+% Slide 10: Engineering Challenges
+% -----------------------------------------------------------------
+\begin{frame}{Engineering Challenges}
+  \begin{block}{Key Architecture Bottlenecks Resolved}
+    \begin{itemize}
+      \item \textbf{Docker Networking}: Configured dual-listener setup inside Compose for Kafka (\texttt{localhost:9092} for host vs. internal container routing via \texttt{kafka:29092}).
+      \item \textbf{DataFrame Schema Parsing}: Safely flattened multi-nested JSON structures directly inside PySpark streaming using explicit spark schema structures.
+      \item \textbf{DFS Checkpoint Permissions}: Resolved local folder mount read/write access and umask restrictions under Dockerized Spark executions.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+% -----------------------------------------------------------------
+% Slide 11: Future Enhancements (Stretch Goals)
+% -----------------------------------------------------------------
+\begin{frame}{Future Enhancements}
+  \begin{block}{Enterprise Scaling Roadmap}
+    \begin{itemize}
+      \item \textbf{Object Storage Migration}: Replace local folder mounts with local S3-compatible storage engine (MinIO) for enterprise testing.
+      \item \textbf{Data Testing Layer}: Implement Great Expectations directly into validation pipelines to check data health before parquet writes.
+      \item \textbf{Advanced Streaming Aggregation}: Introduce sliding time-window aggregations and multi-topic Kafka routing workflows.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+% -----------------------------------------------------------------
+% Slide 12: Conclusion & Q&A
 % -----------------------------------------------------------------
 \begin{frame}[standout]
-  Questions \& Discussion
-  
-  \vspace{1em}
-  \small\texttt{aleks@revature.com}
+  Conclusion \& Q\&A
 \end{frame}
 
 \end{document}
