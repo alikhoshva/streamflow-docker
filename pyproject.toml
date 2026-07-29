@@ -21,9 +21,17 @@ airflow = [
     "apache-airflow",
     "apache-airflow-providers-apache-spark",
 ]
+dashboard = [
+    "streamlit>=1.37.0",
+    "pandas>=2.2.0",
+    "pyarrow>=14.0.0",
+    "plotly>=5.0.0",
+]
 dev = [
     "pytest",
+    "pip-tools",
 ]
+
 
 [tool.setuptools.packages.find]
 where = ["src"]

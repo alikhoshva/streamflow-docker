@@ -1,0 +1,22 @@
+# Core package (editable)
+-e .
+
+# Messaging & Config
+kafka-python-ng
+pyyaml
+
+# Spark & Airflow Processing
+pyspark==4.1.2
+pyspark-client==4.1.2
+apache-airflow
+apache-airflow-providers-apache-spark
+
+# Analytics & Streamlit Dashboard
+streamlit>=1.37.0
+pandas>=2.2.0
+pyarrow>=14.0.0
+plotly>=5.0.0
+
+# Development & Testing
+pytest
+pip-tools

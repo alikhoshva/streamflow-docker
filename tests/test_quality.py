@@ -31,7 +31,7 @@ def test_validate_dataframe_happy_path(spark):
             "price": 12.99
         }
     }"""
-    df = spark.createDataFrame([(valid_json,)], ["json_string"])
+    df = spark.createDataFrame([(valid_json,)], "json_string STRING")
     parsed_df = df.select(
         from_json(col("json_string"), RETAIL_SPARK_SCHEMA).alias("data"),
         col("json_string")
@@ -46,7 +46,7 @@ def test_validate_dataframe_happy_path(spark):
 
 def test_validate_dataframe_json_parsing_failed(spark):
     invalid_json = "{malformed json"
-    df = spark.createDataFrame([(invalid_json,)], ["json_string"])
+    df = spark.createDataFrame([(invalid_json,)], "json_string STRING")
     parsed_df = df.select(
         from_json(col("json_string"), RETAIL_SPARK_SCHEMA).alias("data"),
         col("json_string")
@@ -66,7 +66,7 @@ def test_validate_dataframe_missing_required_fields(spark):
         "source": "streamflow-producer",
         "entity_id": "SKU-00001"
     }"""
-    df = spark.createDataFrame([(invalid_json,)], ["json_string"])
+    df = spark.createDataFrame([(invalid_json,)], "json_string STRING")
     parsed_df = df.select(
         from_json(col("json_string"), RETAIL_SPARK_SCHEMA).alias("data"),
         col("json_string")
@@ -97,7 +97,7 @@ def test_validate_dataframe_value_constraints(spark):
             "price": 12.99
         }
     }"""
-    df = spark.createDataFrame([(invalid_json,)], ["json_string"])
+    df = spark.createDataFrame([(invalid_json,)], "json_string STRING")
     parsed_df = df.select(
         from_json(col("json_string"), RETAIL_SPARK_SCHEMA).alias("data"),
         col("json_string")
@@ -126,7 +126,7 @@ def test_validate_dataframe_invalid_timestamp(spark):
             "price": 12.99
         }
     }"""
-    df = spark.createDataFrame([(invalid_json,)], ["json_string"])
+    df = spark.createDataFrame([(invalid_json,)], "json_string STRING")
     parsed_df = df.select(
         from_json(col("json_string"), RETAIL_SPARK_SCHEMA).alias("data"),
         col("json_string")
@@ -160,7 +160,7 @@ def test_validate_dataframe_in_batch_duplicates(spark):
     df = spark.createDataFrame([
         (json1, 100),
         (json1, 200)  # Later timestamp, row_num=1
-    ], ["json_string", "timestamp"])
+    ], "json_string STRING, timestamp LONG")
 
     parsed_df = df.select(
         from_json(col("json_string"), RETAIL_SPARK_SCHEMA).alias("data"),
@@ -192,17 +192,18 @@ def test_validate_dataframe_historical_duplicates(spark):
             "price": 12.99
         }
     }"""
-    df = spark.createDataFrame([(json1,)], ["json_string"])
+    df = spark.createDataFrame([(json1,)], "json_string STRING")
     parsed_df = df.select(
         from_json(col("json_string"), RETAIL_SPARK_SCHEMA).alias("data"),
         col("json_string")
     )
 
     # Mock historical event_ids DataFrame
-    existing_df = spark.createDataFrame([("evt_hist_dup",)], ["event_id"])
+    existing_df = spark.createDataFrame([("evt_hist_dup",)], "event_id STRING")
 
     validated_df = validate_dataframe(parsed_df, existing_df)
     results = validated_df.collect()
 
     assert len(results) == 1
     assert "Duplicate event_id (already processed)" in results[0]["errors"]
+
