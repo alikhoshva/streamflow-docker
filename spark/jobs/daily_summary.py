@@ -29,6 +29,7 @@ def main():
     app_name = config.get("spark", {}).get("app_name", "StreamflowDailySummary")
     raw_path = config.get("spark", {}).get("raw_output_path", "/opt/streamflow/data/raw")
     curated_path = config.get("spark", {}).get("curated_output_path", "/opt/streamflow/data/curated")
+    low_stock_threshold = config.get("spark", {}).get("low_stock_threshold", 9)
 
     spark = (
         SparkSession.builder
@@ -72,11 +73,8 @@ def main():
 
     # Create low_stock_alerts output
     low_stock_alerts = (
-        df.select(
-            "event_id",
-            "event_type",
-            "entity_id"
-        )
+        df.filter(df.payload.current_stock_level < low_stock_threshold)
+          .select("event_id", "event_type", "entity_id", "payload.*")
     )
 
     low_stock_alerts.coalesce(1).write \

@@ -5,12 +5,13 @@ spark:
   checkpoint_location: "/opt/streamflow/data/checkpoints/raw"
   curated_output_path: "/opt/streamflow/data/curated"
   trigger_interval: "10 seconds"
+  low_stock_threshold: 9
 
 kafka:
   bootstrap_servers: "kafka:29092"
   topic: "streamflow.events"
 
 producer:
-  events_per_second: 4
+  events_per_second: 100
   log_level: "INFO"
   pregenerated_events_path: "data/pregenerated_events.jsonl"
