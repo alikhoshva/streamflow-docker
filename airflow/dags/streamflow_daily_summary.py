@@ -43,8 +43,9 @@ def validate_curated_data():
 with DAG(
     dag_id='streamflow_daily_summary',
     default_args=default_args,
-    schedule='@daily',
+    schedule='*/2 * * * *',
     catchup=False,
+    max_active_runs=1,
 ) as dag:
 
     run_daily_summary = SparkSubmitOperator(
