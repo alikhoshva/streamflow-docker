@@ -373,8 +373,10 @@ pyproject-hooks==1.2.0
     #   pip-tools
 pyspark==4.1.2
     # via -r requirements.in
-pyspark-client==4.2.0
-    # via apache-airflow-providers-apache-spark
+pyspark-client==4.1.2
+    # via
+    #   -r requirements.in
+    #   apache-airflow-providers-apache-spark
 pytest==9.1.1
     # via -r requirements.in
 python-daemon==3.1.2

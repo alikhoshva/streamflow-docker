@@ -6,6 +6,19 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+# PySpark 4.x compatibility patch for missing status symbols
+try:
+    import pyspark.core.status as _status
+    if not hasattr(_status, "SparkExecutorInfo"):
+        from typing import NamedTuple
+        class SparkExecutorInfo(NamedTuple):
+            hostPort: str = ""
+        setattr(_status, "SparkExecutorInfo", SparkExecutorInfo)
+        if hasattr(_status, "__all__") and "SparkExecutorInfo" not in _status.__all__:
+            _status.__all__.append("SparkExecutorInfo")
+except Exception:
+    pass
+
 from scripts.cleanup_data import clean_directory, TARGET_SUBDIRS
 
 
