@@ -180,7 +180,7 @@
         \begin{itemize}
           \item \textbf{Structure \& Types}: Non-empty fields, valid JSON parse, schema matching.
           \item \textbf{Business Rules}: Valid ISO timestamps, allowed sources \& event types.
-          \item \textbf{Deduplication}: Micro-batch de-duping and historical raw log lookup[cite: 2].
+          \item \textbf{Deduplication}: Micro-batch de-duping and historical raw log lookup.
         \end{itemize}
       \end{block}
 
@@ -258,7 +258,7 @@
   \small
   \begin{block}{1. Multi-Container Orchestration}
     \textbf{Issue}: Race conditions and memory pressure when spinning up Airflow, Kafka, Spark, and Producer together.\\
-    \textbf{Solution}: Added explicit health checks and dependency ordering (\texttt{depends\_on}) in Docker Compose[cite: 1].
+    \textbf{Solution}: Added explicit health checks and dependency ordering (\texttt{depends\_on}) in Docker Compose.
   \end{block}
 
   \begin{block}{2. Mounted Volume Read/Write Permissions}
